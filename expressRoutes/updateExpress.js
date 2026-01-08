@@ -4,7 +4,7 @@ import path from "path";
 
 const router = express.Router();
 
-const SCRIPT_TIMEOUT_MS = 2 * 60 * 1000; // 5 分钟
+const SCRIPT_TIMEOUT_MS = 3 * 60 * 1000; // 5 分钟
 
 router.post("/updateExpress", (req, res) => {
   const scriptPath = path.resolve(
