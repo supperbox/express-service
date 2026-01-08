@@ -4,7 +4,7 @@ import path from "path";
 
 const router = express.Router();
 
-const SCRIPT_TIMEOUT_MS = 1 * 60 * 1000; // 5 分钟
+const SCRIPT_TIMEOUT_MS = 2 * 60 * 1000; // 5 分钟
 
 router.post("/updateExpress", (req, res) => {
   const scriptPath = path.resolve(
@@ -17,13 +17,11 @@ router.post("/updateExpress", (req, res) => {
     { timeout: SCRIPT_TIMEOUT_MS },
     (err, stdout, stderr) => {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Execution failed",
-            error: err.message,
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Execution failed",
+          error: err.message,
+        });
       }
       res.json({ success: true, stdout, stderr });
     }
@@ -41,13 +39,11 @@ router.post("/updateBlog", (req, res) => {
     { timeout: SCRIPT_TIMEOUT_MS },
     (err, stdout, stderr) => {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Execution failed",
-            error: err.message,
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Execution failed",
+          error: err.message,
+        });
       }
       res.json({ success: true, stdout, stderr });
     }
@@ -65,13 +61,11 @@ router.post("/updateImageVue", (req, res) => {
     { timeout: SCRIPT_TIMEOUT_MS },
     (err, stdout, stderr) => {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Execution failed",
-            error: err.message,
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Execution failed",
+          error: err.message,
+        });
       }
       res.json({ success: true, stdout, stderr });
     }
@@ -89,13 +83,11 @@ router.post("/updateServiceDeploy", (req, res) => {
     { timeout: SCRIPT_TIMEOUT_MS },
     (err, stdout, stderr) => {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            success: false,
-            message: "Execution failed",
-            error: err.message,
-          });
+        return res.status(500).json({
+          success: false,
+          message: "Execution failed",
+          error: err.message,
+        });
       }
       res.json({ success: true, stdout, stderr });
     }
