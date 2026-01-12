@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
-mongoose.connect('mongodb://jlw:wsjlw-12@121.37.23.86:27017/userInfo')
+// 本地连接（无需用户名密码，除非你手动开启了 auth）
+mongoose.connect('mongodb://jlw:wsjlw-12@127.0.0.1:27017/userInfo')
+
+// 如果你需要连接远程数据库，请取消下面注释并注释掉上面的本地连接
+// mongoose.connect('mongodb://jlw:wsjlw-12@121.37.23.86:27017/userInfo')
 
 const db = mongoose.connection
 db.on('error', (err) => {
