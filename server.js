@@ -40,7 +40,7 @@ process.on("uncaughtException", (err) => {
 
 // 触发更新123
 // 支持通过环境变量配置端口与绑定地址
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3008;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3101;
 // 绑定到 0.0.0.0 使外部能通过服务器 IP 访问；可通过环境变量覆盖
 const HOST = process.env.HOST || "0.0.0.0";
 
@@ -55,6 +55,9 @@ app.use(httpLoggerMiddleware);
 if (process.env.ENABLE_CORS === "true") {
   app.use(cors());
 }
+
+// Swagger 文档（/api-docs）
+setupSwagger(app);
 
 app.use("/home", userRoute);
 app.use("/login", loginRoute);

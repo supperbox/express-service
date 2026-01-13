@@ -20,7 +20,7 @@ module.exports = {
       max_memory_restart: "512M",
       env: {
         NODE_ENV: "production",
-        PORT: 3008,
+        PORT: 3101,
         HOST: "0.0.0.0",
         // ENABLE_CORS: process.env.ENABLE_CORS || "false",
         // WEBHOOK_SECRET: process.env.WEBHOOK_SECRET,
