@@ -44,7 +44,8 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3008;
 // 绑定到 0.0.0.0 使外部能通过服务器 IP 访问；可通过环境变量覆盖
 const HOST = process.env.HOST || "0.0.0.0";
 
-app.use(express.json());
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 // HTTP 请求日志
 app.use(httpLoggerMiddleware);

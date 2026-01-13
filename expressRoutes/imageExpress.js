@@ -57,9 +57,9 @@ const upload = multer({
   },
 });
 
-// 云服务器配置（确保这里的信息和你用 ssh/sftp 登录时完全一致）
+// 云服务器配置 (已更改为本地，因为后端已迁移)
 const SERVER_CONFIG = {
-  host: "121.37.23.86",
+  host: "127.0.0.1",
   port: 22, // 注意使用数字而不是字符串
   username: "root",
   password: "wsjlw-12",
