@@ -13,7 +13,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /userInfo/getAllUserInfo:
+ * /home/userInfo/getAllUserInfo:
  *   get:
  *     summary: 获取所有用户信息
  *     tags: [Users]
@@ -44,7 +44,7 @@ router.get("/userInfo/getAllUserInfo", async (req, res) => {
 
 /**
  * @swagger
- * /userInfo/new:
+ * /home/userInfo/new:
  *   post:
  *     summary: 创建新用户
  *     tags: [Users]
@@ -80,7 +80,7 @@ router.post("/userInfo/new", async (req, res) => {
 
 /**
  * @swagger
- * /userInfo/edit:
+ * /home/userInfo/edit:
  *   post:
  *     summary: 编辑用户信息
  *     tags: [Users]
@@ -122,7 +122,7 @@ router.post("/userInfo/edit", async (req, res) => {
 
 /**
  * @swagger
- * /userInfo/delete:
+ * /home/userInfo/delete:
  *   post:
  *     summary: 删除用户
  *     tags: [Users]

@@ -5,7 +5,18 @@ import path from "path";
 const router = express.Router();
 
 const SCRIPT_TIMEOUT_MS = 3 * 60 * 1000; // 5 分钟
-
+/**
+ * @swagger
+ * /update/updateExpress:
+ *   post:
+ *     summary: 执行 updateExpress.sh 脚本以更新 Express 服务
+ *     tags: [Update]
+ *     responses:
+ *       200:
+ *         description: 脚本执行成功，并返回 stdout/stderr
+ *       500:
+ *         description: 执行失败
+ */
 router.post("/updateExpress", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
@@ -28,6 +39,18 @@ router.post("/updateExpress", (req, res) => {
   );
 });
 
+/**
+ * @swagger
+ * /update/updateBlog:
+ *   post:
+ *     summary: 执行 updateBlog.sh 脚本以更新博客内容
+ *     tags: [Update]
+ *     responses:
+ *       200:
+ *         description: 脚本执行成功，并返回 stdout/stderr
+ *       500:
+ *         description: 执行失败
+ */
 router.post("/updateBlog", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
@@ -50,6 +73,18 @@ router.post("/updateBlog", (req, res) => {
   );
 });
 
+/**
+ * @swagger
+ * /update/updateImageVue:
+ *   post:
+ *     summary: 执行 updateImageVue.sh 脚本以更新图片前端
+ *     tags: [Update]
+ *     responses:
+ *       200:
+ *         description: 脚本执行成功，并返回 stdout/stderr
+ *       500:
+ *         description: 执行失败
+ */
 router.post("/updateImageVue", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
@@ -72,6 +107,18 @@ router.post("/updateImageVue", (req, res) => {
   );
 });
 
+/**
+ * @swagger
+ * /update/updateServiceDeploy:
+ *   post:
+ *     summary: 执行 updateScript.sh 脚本以部署服务脚本
+ *     tags: [Update]
+ *     responses:
+ *       200:
+ *         description: 脚本执行成功，并返回 stdout/stderr
+ *       500:
+ *         description: 执行失败
+ */
 router.post("/updateServiceDeploy", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",

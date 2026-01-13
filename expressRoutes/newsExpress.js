@@ -504,11 +504,71 @@ function parseBingResults(html) {
 }
 
 /**
- * GET /news/list - 获取新闻列表
- * @query {string} tag - 新闻分类（finance/current/society/hot）
- * @query {string} q - 用户自定义关键词（可选）
- * @query {string} source - 数据源（bing/toutiao/weibo）
- * @query {string} region - 地区（CN/US/ALL等）
+ * @swagger
+ * /news/list:
+ *   get:
+ *     summary: 获取新闻列表
+ *     description: 根据关键词/分类从多数据源聚合并返回新闻列表（随机10条）
+ *     tags: [News]
+ *     parameters:
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: 新闻分类或关键词（优先使用）
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         description: 关键词（兼容旧参数）
+ *       - in: query
+ *         name: source
+ *         schema:
+ *           type: string
+ *           enum: [bing, toutiao, weibo]
+ *         description: 指定数据源
+ *       - in: query
+ *         name: region
+ *         schema:
+ *           type: string
+ *         description: 地区代码（CN/US/ALL 等）
+ *     responses:
+ *       200:
+ *         description: 返回聚合后的新闻列表
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 tag:
+ *                   type: string
+ *                 keyword:
+ *                   type: string
+ *                 searchTime:
+ *                   type: string
+ *                 provider:
+ *                   type: string
+ *                 region:
+ *                   type: string
+ *                 source:
+ *                   type: string
+ *                 list:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       title:
+ *                         type: string
+ *                       summary:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                       source:
+ *                         type: string
+ *                       date:
+ *                         type: string
  */
 router.get("/list", async (req, res) => {
   // 1. 解析查询参数
@@ -583,6 +643,41 @@ router.get("/list", async (req, res) => {
     res.status(500).json({ message: e?.message || "news/list failed" });
   }
 });
+
+/**
+ * @swagger
+ * /news/detail:
+ *   get:
+ *     summary: 获取新闻详情
+ *     description: 抓取并解析新闻原文内容，返回标题和纯文本正文
+ *     tags: [News]
+ *     parameters:
+ *       - in: query
+ *         name: url
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: 新闻原文的完整 URL
+ *       - in: query
+ *         name: region
+ *         schema:
+ *           type: string
+ *         description: 地区代码（可选，用于 CN 地区的域名限制）
+ *     responses:
+ *       200:
+ *         description: 返回原文标题和解析后的正文
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ */
 
 /**
  * 检查域名是否被封禁（SSRF 防护）

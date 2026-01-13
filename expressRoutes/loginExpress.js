@@ -14,7 +14,7 @@ const JWT_SECRET = "your_secret_key"; // 建议放到环境变量
 
 /**
  * @swagger
- * /auth/register:
+ * /login/register:
  *   post:
  *     summary: 用户注册
  *     tags: [Auth]
@@ -60,7 +60,7 @@ router.post("/register", async (req, res) => {
 
 /**
  * @swagger
- * /auth/login:
+ * /login/login:
  *   post:
  *     summary: 用户登录
  *     tags: [Auth]

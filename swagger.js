@@ -21,7 +21,7 @@ const options = {
     ],
   },
   // 指定包含 Swagger 注释的文件路径
-  apis: ["./server/expressRoutes/*.js"],
+  apis: ["./expressRoutes/*.js"],
 };
 
 const specs = swaggerJsdoc(options);
