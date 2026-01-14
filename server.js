@@ -4,7 +4,8 @@ import {
   installConsoleRedirect,
   logger,
 } from "./utils/logger.js";
-import model from "./db/User.js";
+import mongoose from "./db/db.js";
+import { connectMongo, getMongoState } from "./db/db.js";
 import setupSwagger from "./swagger.js";
 import express from "express";
 import cors from "cors";
@@ -38,6 +39,11 @@ process.on("uncaughtException", (err) => {
   logger.error(`UncaughtException: ${err?.stack || String(err)}`);
 });
 
+// MongoDB 连接初始化：不阻塞服务启动，但会在后台尝试连接/重连
+void connectMongo().catch((err) => {
+  logger.error(`MongoDB initial connect failed: ${err?.message || String(err)}`);
+});
+
 // 触发更新123
 // 支持通过环境变量配置端口与绑定地址
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3101;
@@ -59,9 +65,35 @@ if (process.env.ENABLE_CORS === "true") {
 // Swagger 文档（/api-docs）
 setupSwagger(app);
 
-app.use("/home", userRoute);
-app.use("/login", loginRoute);
-app.use("/file", imageRoute);
+function requireMongoConnected(req, res, next) {
+  if (mongoose.connection.readyState === 1) return next();
+
+  // 触发一次后台重连（幂等；不会重复并发 connect）
+  void connectMongo().catch(() => {
+    // connectMongo 内部已记录错误并安排重连
+  });
+
+  const state = getMongoState();
+  logger.warn(
+    `[MongoGuard] reject request: ${req.method} ${req.originalUrl} (state=${state.readyStateLabel})`
+  );
+  return res.status(503).json({
+    message: "Database not connected",
+    mongo: { readyState: state.readyState, state: state.readyStateLabel },
+  });
+}
+
+app.get("/health", (req, res) => {
+  const state = getMongoState();
+  res.json({
+    ok: true,
+    mongo: { readyState: state.readyState, state: state.readyStateLabel },
+  });
+});
+
+app.use("/home", requireMongoConnected, userRoute);
+app.use("/login", requireMongoConnected, loginRoute);
+app.use("/file", requireMongoConnected, imageRoute);
 app.use("/update", updateExpressRoute);
 app.use("/news", newsRoute);
 // 将 uploads 文件夹公开为静态资源
@@ -92,6 +124,21 @@ app.get("/", (req, res) => {
 // 统一错误日志
 app.use((err, req, res, next) => {
   logger.error(err);
+
+  const msg = String(err?.message || "");
+  const name = String(err?.name || "");
+  const isMongoUnavailable =
+    name === "MongooseError" ||
+    name === "MongoServerSelectionError" ||
+    name === "MongoNetworkError" ||
+    /buffering timed out/i.test(msg) ||
+    /not connected/i.test(msg) ||
+    /server selection timed out/i.test(msg);
+
+  if (isMongoUnavailable) {
+    return res.status(503).json({ message: "Database unavailable" });
+  }
+
   res.status(500).json({ message: "Internal Server Error" });
 });
 
