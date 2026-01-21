@@ -44,7 +44,7 @@ pnpm install
 项目根目录已有 [.env](.env) 示例配置，可按需调整：
 
 - `HOST`：监听地址（默认 `0.0.0.0`）
-- `PORT`：端口（默认 `3008`）
+- `PORT`：端口（默认 `3101`）
 - `ENABLE_CORS`：是否启用 CORS（`true/false`）
 
 日志相关（可选）：
@@ -63,7 +63,7 @@ pnpm run node
 
 默认启动后：
 
-- 服务地址：`http://HOST:PORT`（例如 `http://localhost:3008`）
+- 服务地址：`http://HOST:PORT`（例如 `http://localhost:3101`）
 - 健康检查：`GET /` 返回 `Hello World!`
 
 ### 4) 使用 PM2 启动（更偏生产）
@@ -95,6 +95,7 @@ PM2 配置见 [ecosystem.config.cjs](ecosystem.config.cjs)。
 - `/file` → 图片文件
 - `/update` → 更新脚本
 - `/news` → 新闻
+- `/comment` → 博客评论
 
 ### 用户信息（/home）
 
@@ -156,6 +157,16 @@ PM2 配置见 [ecosystem.config.cjs](ecosystem.config.cjs)。
   - 返回会随机抽取 10 条
 - `GET /news/detail?url=https://...&region=CN`
   - 抓取原文 HTML 并抽取正文（含 SSRF 基础防护：禁止内网/localhost）
+
+### 评论（/comment）
+
+来自 [expressRoutes/commentExpress.js](expressRoutes/commentExpress.js)：
+
+- `GET /comment/list?slug=...`：获取某篇文章评论
+- `POST /comment/create`：创建评论（匿名）
+  - body：`{ slug, content, parentId?, authorName? }`（authorName 不传则自动生成）
+- `DELETE /comment/:id`：删除评论（需要登录 token）
+- `PATCH /comment/:id/status`：更新评论状态（需要登录 token）
 
 ---
 

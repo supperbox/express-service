@@ -13,6 +13,7 @@ import loginRoute from "./expressRoutes/loginExpress.js";
 import imageRoute from "./expressRoutes/imageExpress.js";
 import updateExpressRoute from "./expressRoutes/updateExpress.js";
 import newsRoute from "./expressRoutes/newsExpress.js";
+import commentRoute from "./expressRoutes/commentExpress.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -30,7 +31,7 @@ process.on("unhandledRejection", (reason) => {
   logger.error(
     `UnhandledRejection: ${
       reason instanceof Error ? reason.stack : String(reason)
-    }`
+    }`,
   );
 });
 
@@ -64,6 +65,7 @@ app.use("/login", loginRoute);
 app.use("/file", imageRoute);
 app.use("/update", updateExpressRoute);
 app.use("/news", newsRoute);
+app.use("/comment", commentRoute);
 // 将 uploads 文件夹公开为静态资源
 const uploadDir = path.join(__dirname, "../uploads"); // 确保路径正确
 app.use("/uploads", express.static(uploadDir));
