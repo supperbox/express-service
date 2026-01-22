@@ -1,4 +1,4 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import {
   httpLoggerMiddleware,
   installConsoleRedirect,
@@ -16,12 +16,19 @@ import newsRoute from "./expressRoutes/newsExpress.js";
 import commentRoute from "./expressRoutes/commentExpress.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectMongo } from "./db/db.js";
 
 // 计算 ES 模块中的 __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 确保无论从哪里启动，都读取到 express/.env
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 const app = express();
+
+// 启动时尝试连接 MongoDB
+connectMongo();
 
 // 将 console.* 输出纳入统一日志（控制台 + 文件）
 installConsoleRedirect();
@@ -91,10 +98,14 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 // 统一错误日志
 app.use((err, req, res, next) => {
   logger.error(err);
-  res.status(500).json({ message: "Internal Server Error" });
+  res.status(500).json({ message: err.message || "Internal Server Error" });
 });
 
 app.listen(PORT, HOST, () => {

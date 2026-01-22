@@ -8,6 +8,7 @@
   },
   "scripts": {
     "node": "cross-env NODE_ENV=development node ./server.js",
+    "dev": "cross-env NODE_ENV=development node ./server.js",
     "start": "pm2 start ecosystem.config.cjs ",
     "ei": "pm2 start ecosystem.config.cjs ",
     "stop": "pm2 stop ecosystem.config.cjs ",
