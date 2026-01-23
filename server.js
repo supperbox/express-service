@@ -22,8 +22,12 @@ import { connectMongo } from "./db/db.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 确保无论从哪里启动，都读取到 express/.env
-dotenv.config({ path: path.join(__dirname, ".env") });
+// 根据环境动态加载 .env 文件
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+dotenv.config({ path: path.join(__dirname, envFile) });
 
 const app = express();
 
