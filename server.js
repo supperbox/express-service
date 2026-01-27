@@ -14,6 +14,7 @@ import imageRoute from "./expressRoutes/imageExpress.js";
 import updateExpressRoute from "./expressRoutes/updateExpress.js";
 import newsRoute from "./expressRoutes/newsExpress.js";
 import commentRoute from "./expressRoutes/commentExpress.js";
+import upLoadHtmlRoute from "./expressRoutes/upLoadExpress.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectMongo } from "./db/db.js";
@@ -77,6 +78,7 @@ app.use("/file", imageRoute);
 app.use("/update", updateExpressRoute);
 app.use("/news", newsRoute);
 app.use("/comment", commentRoute);
+app.use("/html", upLoadHtmlRoute);
 // 将 uploads 文件夹公开为静态资源
 const uploadDir = path.join(__dirname, "../uploads"); // 确保路径正确
 app.use("/uploads", express.static(uploadDir));
