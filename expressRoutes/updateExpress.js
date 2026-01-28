@@ -20,7 +20,7 @@ const SCRIPT_TIMEOUT_MS = 3 * 60 * 1000; // 5 分钟
 router.post("/updateExpress", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
-    "updateExpress.sh"
+    "updateExpress.sh",
   );
   execFile(
     "bash",
@@ -35,7 +35,7 @@ router.post("/updateExpress", (req, res) => {
         });
       }
       res.json({ success: true, stdout, stderr });
-    }
+    },
   );
 });
 
@@ -54,7 +54,7 @@ router.post("/updateExpress", (req, res) => {
 router.post("/updateBlog", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
-    "updateBlog.sh"
+    "updateBlog.sh",
   );
   execFile(
     "bash",
@@ -69,7 +69,7 @@ router.post("/updateBlog", (req, res) => {
         });
       }
       res.json({ success: true, stdout, stderr });
-    }
+    },
   );
 });
 
@@ -88,7 +88,7 @@ router.post("/updateBlog", (req, res) => {
 router.post("/updateImageVue", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
-    "updateImageVue.sh"
+    "updateImageVue.sh",
   );
   execFile(
     "bash",
@@ -103,7 +103,7 @@ router.post("/updateImageVue", (req, res) => {
         });
       }
       res.json({ success: true, stdout, stderr });
-    }
+    },
   );
 });
 
@@ -122,7 +122,7 @@ router.post("/updateImageVue", (req, res) => {
 router.post("/updateServiceDeploy", (req, res) => {
   const scriptPath = path.resolve(
     "/var/www/service-deploy-scripts",
-    "updateScript.sh"
+    "updateScript.sh",
   );
   execFile(
     "bash",
@@ -137,7 +137,7 @@ router.post("/updateServiceDeploy", (req, res) => {
         });
       }
       res.json({ success: true, stdout, stderr });
-    }
+    },
   );
 });
 

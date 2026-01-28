@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import "./env.js";
 import {
   httpLoggerMiddleware,
   installConsoleRedirect,
@@ -19,22 +19,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectMongo } from "./db/db.js";
 
+const app = express();
+
 // 计算 ES 模块中的 __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 根据环境动态加载 .env 文件
-const envFile =
-  process.env.NODE_ENV === "production"
-    ? ".env.production"
-    : ".env.development";
-dotenv.config({ path: path.join(__dirname, envFile) });
-
-const app = express();
+console.log(`当前环境: ${process.env.NODE_ENV}`);
+console.log(`环境变量测试: ${process.env.SFTP_USERNAME}`);
 
 // 启动时尝试连接 MongoDB
 connectMongo();
-
 // 将 console.* 输出纳入统一日志（控制台 + 文件）
 installConsoleRedirect();
 
@@ -51,7 +46,6 @@ process.on("uncaughtException", (err) => {
   logger.error(`UncaughtException: ${err?.stack || String(err)}`);
 });
 
-// 触发更新123
 // 支持通过环境变量配置端口与绑定地址
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3101;
 // 绑定到 0.0.0.0 使外部能通过服务器 IP 访问；可通过环境变量覆盖

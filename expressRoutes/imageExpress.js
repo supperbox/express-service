@@ -10,34 +10,6 @@ const router = express.Router();
 
 /**
  * @swagger
- * components:
- *   schemas:
- *     File:
- *       type: object
- *       properties:
- *         serialNumber:
- *           type: integer
- *           description: 文件序列号
- *         name:
- *           type: string
- *           description: 文件名
- *         size:
- *           type: integer
- *           description: 文件大小(字节)
- *         path:
- *           type: string
- *           description: 远程文件路径
- *         uploadTime:
- *           type: string
- *           format: date-time
- *           description: 上传时间
- *         imageHeight:
- *           type: integer
- *           description: 图片高度
- */
-
-/**
- * @swagger
  * tags:
  *   name: Files
  *   description: 图片文件管理接口
@@ -57,18 +29,49 @@ const upload = multer({
   },
 });
 
-// 云服务器配置 (已更改为本地，因为后端已迁移)
+// SFTP 服务器配置（从 env 读取）
 const SERVER_CONFIG = {
-  host: "127.0.0.1",
-  port: 22, // 注意使用数字而不是字符串
-  username: "root",
-  password: "wsjlw-12",
-  // 如果服务器禁止密码登录，可以改用私钥：
-  // privateKey: fs.readFileSync('f:/coder/Ts-mongoDb-express/keys/id_rsa'),
-  // passphrase: '你的私钥密码，如果有的话',
+  host: process.env.SFTP_HOST || "127.0.0.1",
+  port: Number(process.env.SFTP_PORT || 22),
+  username: process.env.SFTP_USERNAME || "root",
+  password: process.env.SFTP_PASSWORD,
 };
 
 const loadPath = "/var/www/images/fenwei/";
+
+function normalizePublicBase(rawBase, req) {
+  const base = (rawBase || "").trim();
+  if (!base) return "";
+  if (/^https?:\/\//i.test(base)) return base;
+  if (base.startsWith("/")) return base;
+  // 形如 115.190.184.29:3101/images/（无协议）
+  const proto = req?.protocol || "http";
+  return `${proto}://${base}`;
+}
+
+function joinUrl(base, subPath) {
+  const b = base.endsWith("/") ? base : `${base}/`;
+  const p = String(subPath || "").replace(/^\/+/, "");
+  return `${b}${p}`;
+}
+
+function publicPathFromFilePath(filePath, req) {
+  const publicBase = normalizePublicBase(process.env.IMAGE_LOAD_PATH, req);
+  if (!publicBase) return filePath;
+
+  const fp = String(filePath || "").replace(/\\/g, "/");
+  const relFromImagesRoot = fp.replace(/^\/var\/www\/images\/?/, "");
+  if (relFromImagesRoot !== fp && relFromImagesRoot) {
+    return joinUrl(publicBase, relFromImagesRoot);
+  }
+
+  if (fp.startsWith("/images/")) {
+    return joinUrl(publicBase, fp.slice("/images/".length));
+  }
+
+  // 兜底：拼接文件名，避免直接暴露服务器绝对路径
+  return joinUrl(publicBase, path.posix.basename(fp));
+}
 
 /**
  * @swagger
@@ -121,7 +124,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 
     // 获取原始文件名并修改后缀为 .webp
     const originalName = Buffer.from(req.file.originalname, "latin1").toString(
-      "utf8"
+      "utf8",
     );
     const nameWithoutExt = path.parse(originalName).name;
     const fileName = `${nameWithoutExt}.webp`;
@@ -177,7 +180,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
         .toBuffer();
 
       console.log(
-        `图片转换 WebP 完成: ${originalName} -> ${fileName}, 原大小=${req.file.size}B, 转换后=${bufferToUpload.length}B`
+        `图片转换 WebP 完成: ${originalName} -> ${fileName}, 原大小=${req.file.size}B, 转换后=${bufferToUpload.length}B`,
       );
     } catch (compressErr) {
       console.error("图片转换失败:", compressErr);
@@ -299,7 +302,7 @@ router.post("/upload-batch", upload.array("files", 500), async (req, res) => {
 
     for (const file of req.files) {
       const originalName = Buffer.from(file.originalname, "latin1").toString(
-        "utf8"
+        "utf8",
       );
       const nameWithoutExt = path.parse(originalName).name;
       const fileName = `${nameWithoutExt}.webp`;
@@ -334,7 +337,7 @@ router.post("/upload-batch", upload.array("files", 500), async (req, res) => {
       } catch (compressErr) {
         console.warn(
           `图片转换失败（${originalName}），跳过此文件:`,
-          compressErr
+          compressErr,
         );
         continue;
       }
@@ -436,7 +439,7 @@ router.delete("/delete/:identifier", async (req, res) => {
         "远程文件删除失败或不存在:",
         err.message,
         " level:",
-        err.level
+        err.level,
       );
     } finally {
       sftp.end();
@@ -523,7 +526,7 @@ router.get("/list", async (req, res) => {
           serialNumber: file.serialNumber,
           name: file.fileName,
           size: file.fileSize,
-          path: file.filePath,
+          path: publicPathFromFilePath(file.filePath, req),
           uploadTime: file.uploadTime,
           mimeType: file.mimeType,
           imageHeight: file.imageHeight,
