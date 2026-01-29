@@ -26,7 +26,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 console.log(`当前环境: ${process.env.NODE_ENV}`);
-console.log(`环境变量测试: ${process.env.SFTP_USERNAME}`);
 
 // 启动时尝试连接 MongoDB
 connectMongo();
